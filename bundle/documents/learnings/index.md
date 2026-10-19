@@ -1,0 +1,26 @@
+---
+okf_version: "0.2"
+title: "Curation Loop Learnings Index"
+type: "knowledge-base-index"
+status: "draft"
+generated:
+  by: "agent:dataplex-enrichment-agent/okf-serializer-0.2"
+  at: "2026-10-19T15:40:00Z"
+sources:
+  - "bigquery://projects/sa-demo-agentic/datasets/auto_aftersales_data"
+  - "bigquery://projects/sa-demo-agentic/datasets/auto_sales_data"
+  - "bigquery://projects/sa-demo-agentic/datasets/auto_manufacturing_data"
+x-kcmd:
+  name: "projects/sa-demo-agentic/locations/us-central1/entryGroups/auto-enterprise-okf-context-set/entries/documents/learnings"
+  entryType: "projects/655216118709/locations/global/entryTypes/document"
+  parentEntry: "projects/sa-demo-agentic/locations/us-central1/entryGroups/auto-enterprise-okf-context-set/entries/documents"
+  documentType: "knowledge-base-index"
+---
+
+# Curation Loop Learnings Index
+
+## Purpose
+Captures empirical failure modes observed during Data Agent benchmarking and encodes deterministic SQL guardrails.
+
+## Learnings
+- `documents/learnings/warranty-fanout-and-absorption-learnings`: Fixes `service_parts_usage` 1.78x fan-out and `service_type` 48% warranty absorption undercount.

@@ -1,0 +1,77 @@
+{
+  "timestamp": "2026-10-19T15:40:00Z",
+  "project_id": "sa-demo-agentic",
+  "location": "us-central1",
+  "glossary": "projects/sa-demo-agentic/locations/global/glossaries/auto-enterprise-okf-glossary",
+  "glossary_terms_count": 6,
+  "context_set_entry_group": "projects/sa-demo-agentic/locations/us-central1/entryGroups/auto-enterprise-okf-context-set",
+  "context_set_live_entries_count": 33,
+  "enrichment_entry_group": "projects/sa-demo-agentic/locations/us-central1/entryGroups/enrichment-entry-group",
+  "enrichment_live_entries_count": 34,
+  "links_published_per_group": 18,
+  "bigquery_tables_enriched": [
+    {
+      "table": "warranty_claims",
+      "status": 200,
+      "columns_enriched": 20
+    },
+    {
+      "table": "service_orders",
+      "status": 200,
+      "columns_enriched": 24
+    },
+    {
+      "table": "service_parts_usage",
+      "status": 200,
+      "columns_enriched": 10
+    },
+    {
+      "table": "vehicle_ownership",
+      "status": 200,
+      "columns_enriched": 19
+    },
+    {
+      "table": "technicians",
+      "status": 200,
+      "columns_enriched": 8
+    },
+    {
+      "table": "recall_campaigns",
+      "status": 200,
+      "columns_enriched": 15
+    }
+  ],
+  "benchmarks": {
+    "trap1_warranty_burden": {
+      "before_okf_gross_unfiltered_sum": "1798306.9",
+      "before_okf_naive_parts_join_sum": "2304147.85",
+      "after_okf_realized_warranty_cost": "1254786.01",
+      "after_okf_open_reserve_exposure": "404016.42",
+      "after_okf_denied_excluded": "139504.47",
+      "after_okf_recoverable_supplier_chargeback": "8439.1",
+      "after_okf_unrecovered_supplier_leakage": "316494.85",
+      "after_okf_net_oem_warranty_burden": "1246346.92"
+    },
+    "trap2_service_absorption": {
+      "before_okf_warranty_repair_orders": "922",
+      "before_okf_warranty_repair_cost": "826977.8",
+      "after_okf_total_covered_orders": "1894",
+      "after_okf_total_oem_absorbed_cost": "1591386.85",
+      "missed_goodwill_and_recall_warranty_dollars": "764409.05"
+    },
+    "trap3_fleet_entitlement": {
+      "before_okf_date_only_fleet": "5000",
+      "before_okf_active_only_fleet": "4582",
+      "after_okf_true_entitled_fleet": "4650",
+      "transferred_with_extended_warranty": "68",
+      "transferred_unentitled_excluded": "236",
+      "buyback_excluded": "114"
+    },
+    "trap4_dimension_padding": {
+      "before_okf_raw_plant_rows": "259",
+      "before_okf_padded_capacity_sum": "315791",
+      "after_okf_active_plant_count": "7",
+      "after_okf_active_capacity_sum": "7446"
+    }
+  }
+}
