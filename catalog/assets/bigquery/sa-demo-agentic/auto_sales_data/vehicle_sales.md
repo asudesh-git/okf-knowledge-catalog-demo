@@ -23,7 +23,7 @@ x-kcmd:
 # Context Overlay: `sa-demo-agentic.auto_sales_data.vehicle_sales`
 
 ## Purpose
-Retail vehicle sales fact table (`5,000` rows, 1 row per `sale_id` / `vin`). Connects sold vehicles (`vin`) to `vehicle_models` (`model_id`) and selling `dealerships` (`dealership_id`).
+Retail vehicle sales fact table. Connects sold vehicles (`vin`) to `vehicle_models` (`model_id`) and selling `dealerships` (`dealership_id`).
 
 ## Columns & Metrics
 - `sale_id` (`INTEGER`, PK): Unique retail transaction ID (`1..5000`).

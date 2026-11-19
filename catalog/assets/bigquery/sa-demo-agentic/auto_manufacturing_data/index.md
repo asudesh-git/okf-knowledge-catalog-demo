@@ -23,7 +23,7 @@ x-kcmd:
 Manufacturing facility master data, assembly line OEE telemetry, component parts inventory, and end-of-line quality inspections in `us-central1`.
 
 ## Curated Table Overlays
-- `plants` (259 rows; **7 active plants** `plant_id` 1..7): Manufacturing plant directory (`plant_name`, `location`, `annual_capacity`).
+- `plants` (all catalog rows including inactive entities; **7 active plants** `plant_id` 1..7): Manufacturing plant directory (`plant_name`, `location`, `annual_capacity`).
 - `assembly_line_status` (35 rows): Line-level `operational_efficiency` (OEE), `status`, and `daily_output` for the 7 active plants.
 - `parts_inventory` (50 rows): Component inventory and `source_plant_id` mapping.
 - `quality_inspections` (500 rows): End-of-line plant inspection `defect_severity` and `corrective_action` logs.

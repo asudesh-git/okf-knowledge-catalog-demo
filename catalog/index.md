@@ -51,7 +51,7 @@ Root Open Knowledge Format (`OKF v0.2`) backbone index cataloging all **26 progr
 | [`documents/concepts`](documents/concepts/index.md) | `knowledge-base-index` | `draft` | Business Concepts & Metric Rules Index |
 | [`documents/concepts/net-oem-warranty-burden`](documents/concepts/net-oem-warranty-burden.md) | `knowledge-base` | `stable` | Net OEM Warranty Burden & Supplier Chargeback Recovery |
 | [`documents/concepts/active-warranty-entitlement-fleet`](documents/concepts/active-warranty-entitlement-fleet.md) | `knowledge-base` | `stable` | Active Warranty Entitlement Fleet Rule |
-| [`documents/concepts/dimension-catalog-padding-guardrail`](documents/concepts/dimension-catalog-padding-guardrail.md) | `knowledge-base` | `stable` | Dimension Catalog Padding Guardrail (259 Rows Trap) |
+| [`documents/concepts/dimension-catalog-padding-guardrail`](documents/concepts/dimension-catalog-padding-guardrail.md) | `knowledge-base` | `stable` | Dimension Catalog Padding Guardrail (Unallocated Catalog Entries Guardrail) |
 | [`documents/playbooks`](documents/playbooks/index.md) | `knowledge-base-index` | `draft` | Analytical Playbooks Index |
 | [`documents/playbooks/cross-domain-root-cause-playbook`](documents/playbooks/cross-domain-root-cause-playbook.md) | `knowledge-base` | `stable` | Cross-Domain Warranty & Manufacturing Root-Cause Playbook |
 | [`documents/learnings`](documents/learnings/index.md) | `knowledge-base-index` | `draft` | Curation Loop Learnings Index |

@@ -28,10 +28,10 @@ x-kcmd:
 # Context Overlay: `sa-demo-agentic.auto_sales_data.vehicle_models`
 
 ## Purpose
-Master vehicle platform catalog (`259` total rows; **ONLY 8 active production models** `model_id BETWEEN 1 AND 8`). Maps each vehicle model to its primary assembly `plant_id` in `auto_manufacturing_data.plants`.
+Master vehicle platform catalog (`inactive/unallocated` total rows; **ONLY 8 active production models** `INNER JOIN` to active sales/ownership tables). Maps each vehicle model to its primary assembly `plant_id` in `auto_manufacturing_data.plants`.
 
 ## Columns & Metrics
-- `model_id` (`INTEGER`, PK): Unique model identifier. **CATALOG PADDING TRAP**: Rows `9..259` are unallocated catalog placeholders with zero sales or service orders. Always filter `model_id BETWEEN 1 AND 8` or `INNER JOIN` to `vehicle_sales` / `vehicle_ownership`.
+- `model_id` (`INTEGER`, PK): Unique model identifier. **CATALOG PADDING TRAP**: Rows `9..inactive/unallocated` are unallocated catalog placeholders with zero sales or service orders. Always filter `INNER JOIN` to active sales/ownership tables or `INNER JOIN` to `vehicle_sales` / `vehicle_ownership`.
 - `model_name` (`STRING`): Commercial model name (`Model S1`, `Model T1`, `Model X1`, `Model E1`, `Model SUV2`, `Model C1`, `Model V1`, `Model R1`).
 - `category` (`STRING`): Body style (`Sedan`, `Truck`, `SUV`, `EV`).
 - `msrp` (`FLOAT`): Manufacturer Suggested Retail Price (`USD`).

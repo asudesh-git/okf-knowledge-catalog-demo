@@ -23,10 +23,10 @@ x-kcmd:
 # Active Warranty Entitlement Fleet Rule
 
 ## Purpose
-Defines which vehicles in `sa-demo-agentic.auto_aftersales_data.vehicle_ownership` (`5,000` total VINs) are actively entitled to OEM warranty coverage (`4,650` vehicles).
+Defines which vehicles in `sa-demo-agentic.auto_aftersales_data.vehicle_ownership` are actively entitled to OEM warranty coverage.
 
 ## Entitlement Rules by `ownership_status`
-- `'Active'` (`4,582` VINs): **Entitled** when `warranty_end_date >= CURRENT_DATE()`.
-- `'Transferred'` (`304` VINs): Standard 3-year factory warranty does NOT transfer to second-hand buyers. **Entitled ONLY IF `extended_warranty_purchased = TRUE` (`68` VINs)**; the remaining `236` transferred vehicles are out of coverage.
-- `'Buyback'` (`114` VINs): Lemon-law/manufacturer buybacks; **Never entitled** to active customer warranty coverage.
-- **Total Active Entitled Fleet**: `4,582 + 68 = 4,650` vehicles.
+- `'Active'`: **Entitled** when `warranty_end_date >= CURRENT_DATE`.
+- `'Transferred'`: Standard 3-year factory warranty does NOT transfer to second-hand buyers. **Entitled ONLY IF `extended_warranty_purchased = TRUE`**; the remaining `236` transferred vehicles are out of coverage.
+- `'Buyback'`: Lemon-law/manufacturer buybacks; **Never entitled** to active customer warranty coverage.
+- **Total Active Entitled Fleet**: `active + 68 = active` vehicles.

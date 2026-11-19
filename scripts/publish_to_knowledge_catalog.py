@@ -157,10 +157,42 @@ def ensure_glossary_and_terms(token: str) -> dict:
   return created_terms
 
 
+def ensure_context_set_iam(token: str, eg_name: str) -> int:
+  """Ensures roles/dataplex.contentAdmin, contentEditor, contentUser, and entryGroupOwner are bound on the EntryGroup."""
+  principals = [
+      "user:admin@asudesh.altostrat.com",
+      "serviceAccount:ks-enrichment-runner@sa-demo-agentic.iam.gserviceaccount.com",
+      f"serviceAccount:{PROJECT_NUMBER}-compute@developer.gserviceaccount.com",
+  ]
+  readers = [
+      f"serviceAccount:service-{PROJECT_NUMBER}@gcp-sa-dataplex.iam.gserviceaccount.com",
+      f"serviceAccount:service-{PROJECT_NUMBER}@gcp-sa-discoveryengine.iam.gserviceaccount.com",
+      f"serviceAccount:service-{PROJECT_NUMBER}@gcp-sa-geminidataanalytics.iam.gserviceaccount.com",
+  ]
+  st_iam, eg_pol = api_call("GET", f"https://dataplex.googleapis.com/v1/{eg_name}:getIamPolicy", token)
+  if st_iam != 200:
+    return st_iam
+  eg_rmap = {b["role"]: set(b.get("members", [])) for b in eg_pol.get("bindings", [])}
+  if set(principals).issubset(eg_rmap.get("roles/dataplex.contentAdmin", set())):
+    return 200
+  eg_rmap.setdefault("roles/dataplex.contentAdmin", set()).update(principals)
+  eg_rmap.setdefault("roles/dataplex.contentEditor", set()).update(principals)
+  eg_rmap.setdefault("roles/dataplex.contentUser", set()).update(principals + readers)
+  eg_rmap.setdefault("roles/dataplex.entryGroupOwner", set()).update(principals)
+  new_eg_pol = {
+      "bindings": [{"role": r, "members": sorted(m)} for r, m in sorted(eg_rmap.items())],
+  }
+  if "etag" in eg_pol:
+    new_eg_pol["etag"] = eg_pol["etag"]
+  st_set, _ = api_call("POST", f"https://dataplex.googleapis.com/v1/{eg_name}:setIamPolicy", token, {"policy": new_eg_pol})
+  return st_set
+
+
 def ensure_entry_group(token: str, entry_group_id: str) -> str:
   """Ensures the EntryGroup exists in us-central1 (creating with type=context-set if supported)."""
   parent = f"projects/{PROJECT_ID}/locations/{LOCATION}"
   eg_name = f"{parent}/entryGroups/{entry_group_id}"
+  ensure_context_set_iam(token, eg_name)
   st, res = api_call("GET", f"https://dataplex.googleapis.com/v1/{eg_name}", token)
   if st == 200:
     print(f"EntryGroup exists: {eg_name}")
@@ -185,6 +217,7 @@ def ensure_entry_group(token: str, entry_group_id: str) -> str:
   st, res = api_call("POST", url_create, token, body_with_type)
   if st in (200, 201):
     print(f"Created EntryGroup with type=context-set: {eg_name}")
+    ensure_context_set_iam(token, eg_name)
     time.sleep(3)
     return eg_name
 

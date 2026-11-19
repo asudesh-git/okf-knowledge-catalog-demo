@@ -1,6 +1,6 @@
 ---
 okf_version: "0.2"
-title: "Dimension Catalog Padding Guardrail (259 Rows Trap)"
+title: "Dimension Catalog Padding Guardrail (Unallocated Catalog Entries Guardrail)"
 type: "knowledge-base"
 status: "stable"
 generated:
@@ -20,12 +20,12 @@ x-kcmd:
   documentType: "knowledge-base"
 ---
 
-# Dimension Catalog Padding Guardrail (259 Rows Trap)
+# Dimension Catalog Padding Guardrail (Unallocated Catalog Entries Guardrail)
 
 ## Purpose
-Prevents 32x aggregation distortion caused by unallocated ERP placeholder rows in `plants`, `vehicle_models`, and `dealerships`.
+Prevents materially aggregation distortion caused by unallocated ERP placeholder rows in `plants`, `vehicle_models`, and `dealerships`.
 
 ## Active vs Padded Entity Counts
-- `auto_manufacturing_data.plants`: `259` total rows -> **7 active plants** (`plant_id BETWEEN 1 AND 7`, total capacity `1,250,000` units/yr vs `45,860,000` padded).
-- `auto_sales_data.vehicle_models`: `259` total rows -> **8 active models** (`model_id BETWEEN 1 AND 8`).
-- `auto_sales_data.dealerships`: `259` total rows -> **8 active dealerships** (`dealership_id BETWEEN 1 AND 8`).
+- `auto_manufacturing_data.plants`: `inactive/unallocated` total rows -> **7 active plants** (`INNER JOIN` to `assembly_line_status`, total capacity `1,250,000` units/yr vs `45,860,000` padded).
+- `auto_sales_data.vehicle_models`: `inactive/unallocated` total rows -> **8 active models** (`INNER JOIN` to active sales/ownership tables).
+- `auto_sales_data.dealerships`: `inactive/unallocated` total rows -> **8 active dealerships** (`INNER JOIN` to active sales/service tables).

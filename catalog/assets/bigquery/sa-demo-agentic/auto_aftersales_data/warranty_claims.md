@@ -72,7 +72,7 @@ x-kcmd:
 # Context Overlay: `sa-demo-agentic.auto_aftersales_data.warranty_claims`
 
 ## Purpose
-Records financial warranty claims (`1,894` rows, 1 row per `claim_id` / `service_order_id`) submitted by dealerships for warranty-covered repairs. Central fact table for calculating **Realized Warranty Cost** (`$1,254,786.01`), **Open Warranty Reserve Exposure** (`$404,016.42`), and **Net OEM Warranty Burden** after Supplier Chargeback Recovery.
+Records financial warranty claims submitted by dealerships for warranty-covered repairs. Central fact table for calculating **Realized Warranty Cost**, **Open Warranty Reserve Exposure**, and **Net OEM Warranty Burden** after Supplier Chargeback Recovery.
 
 ## Columns & Metrics
 - `claim_id` (`INTEGER`, PK): Unique warranty claim identifier (`1..1894`).
@@ -80,12 +80,12 @@ Records financial warranty claims (`1,894` rows, 1 row per `claim_id` / `service
 - `vin` (`STRING`, FK -> `vehicle_ownership.vin`, `vehicle_sales.vin`): 17-character Vehicle Identification Number.
 - `claim_date` (`DATE`): Date the warranty claim was filed (`30` days after `service_orders.service_date`).
 - `failure_component` (`STRING`): Failed vehicle subsystem (`Engine`, `Battery`, `Electrical`, `Brakes`, `Transmission`, `Suspension`, `HVAC`, `Infotainment`, `Steering`, `Exhaust`, `Fuel System`).
-- `claim_amount` (`FLOAT`): Total dollar value requested on the claim. **CRITICAL CAVEAT**: Raw `SUM(claim_amount)` (`$1,798,306.90`) includes unadjudicated and rejected claims. Always filter `claim_status = 'Approved'` (`$1,254,786.01`) for realized cost.
+- `claim_amount` (`FLOAT`): Total dollar value requested on the claim. **CRITICAL CAVEAT**: Raw `SUM(claim_amount)` includes unadjudicated and rejected claims. Always filter `claim_status = 'Approved'` for realized cost.
 - `claim_status` (`STRING`): Adjudication state:
-  - `'Approved'` (`1,331` rows, `$1,254,786.01`): Realized financial warranty expense.
-  - `'Pending'` (`233` rows, `$217,261.21`) & `'Under Review'` (`186` rows, `$186,755.21`): Open warranty reserve exposure (`$404,016.42` combined).
-  - `'Denied'` (`144` rows, `$139,504.47`): Rejected claims; `$0` OEM financial liability.
+  - `'Approved'`: Realized financial warranty expense.
+  - `'Pending'` & `'Under Review'`: Open warranty reserve exposure.
+  - `'Denied'`: Rejected claims; `$0` OEM financial liability.
 - `build_plant_name` (`STRING`, FK -> `plants.plant_name`): Final assembly plant where the vehicle (`vin`) was assembled. Use for **Assembly Plant Quality** metrics (`WHERE supplier_fault = FALSE`).
 - `part_source_plant_name` (`STRING`, FK -> `plants.plant_name`): Component manufacturing plant that produced the defective replacement part. Use for **Component Plant Defect** tracing.
-- `supplier_fault` (`BOOLEAN`): `TRUE` (`501` approved claims, `$464,191.35`) when the failure was caused by an external tier-1 supplier defect; `FALSE` (`830` approved claims, `$790,594.66`) when caused by internal OEM assembly/design.
+- `supplier_fault` (`BOOLEAN`): `TRUE` when the failure was caused by an external tier-1 supplier defect; `FALSE` when caused by internal OEM assembly/design.
 - **Metric — Recoverable Supplier Chargeback (`recoverable_supplier_chargeback`)**: When `claim_status = 'Approved' AND supplier_fault = TRUE`, the OEM recovers `0.70 * claim_amount` **ONLY IF** all replaced parts on `service_order_id` have `defective_part_returned = TRUE` in `service_parts_usage` (pre-aggregated by `service_order_id`).

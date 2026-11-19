@@ -26,10 +26,10 @@ x-kcmd:
 # Context Overlay: `sa-demo-agentic.auto_manufacturing_data.plants`
 
 ## Purpose
-Master manufacturing facility table (`259` total rows; **ONLY 7 active manufacturing plants** `plant_id BETWEEN 1 AND 7`).
+Master manufacturing facility table (`inactive/unallocated` total rows; **ONLY 7 active manufacturing plants** `INNER JOIN` to `assembly_line_status`).
 
 ## Columns & Metrics
-- `plant_id` (`INTEGER`, PK): Unique facility identifier. **CATALOG PADDING TRAP**: Rows `8..259` are unallocated global facility codes with zero assembly lines or production. Always filter `plant_id BETWEEN 1 AND 7` or `INNER JOIN` to `assembly_line_status` before computing capacity or efficiency averages!
+- `plant_id` (`INTEGER`, PK): Unique facility identifier. **CATALOG PADDING TRAP**: Rows `8..inactive/unallocated` are unallocated global facility codes with zero assembly lines or production. Always filter `INNER JOIN` to `assembly_line_status` or `INNER JOIN` to `assembly_line_status` before computing capacity or efficiency averages!
 - `plant_name` (`STRING`, UK): Facility name (`Detroit Assembly`, `Ohio Stamping`, `Kentucky Truck`, `Chicago Assembly`, `Dearborn Engine`, `Kansas City Assembly`, `Buffalo Stamping`). Joins to `warranty_claims.build_plant_name` (as final assembly plant) and `warranty_claims.part_source_plant_name` (as component supplier plant).
 - `location` (`STRING`): City and state (`MI`, `OH`, `KY`, `IL`, `MO`, `NY`).
 - `annual_capacity` (`INTEGER`): Nameplate annual production capacity.

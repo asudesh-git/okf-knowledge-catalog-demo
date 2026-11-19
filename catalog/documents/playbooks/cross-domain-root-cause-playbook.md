@@ -26,6 +26,6 @@ x-kcmd:
 Guides Data Agents through a 4-stage investigation joining `auto_aftersales_data`, `auto_sales_data`, and `auto_manufacturing_data`.
 
 ## Investigation Protocol
-1. **Isolate Approved Spend & Split Fault Axis**: Query `warranty_claims` with `claim_status = 'Approved'` and segment into **OEM Assembly Fault (`supplier_fault = FALSE`, `$790,594.66`)** vs **Supplier Component Fault (`supplier_fault = TRUE`, `$464,191.35`)**.
+1. **Isolate Approved Spend & Split Fault Axis**: Query `warranty_claims` with `claim_status = 'Approved'` and segment into **OEM Assembly Fault** vs **Supplier Component Fault**.
 2. **Attribute Assembly Faults to `build_plant_name`**: Join `warranty_claims.build_plant_name = plants.plant_name` and correlate with `assembly_line_status.operational_efficiency` and `quality_inspections`.
-3. **Attribute Component Faults to `part_source_plant_name` & Audit Dealership Core Return**: Pre-aggregate `service_parts_usage` by `service_order_id` (`LOGICAL_AND(defective_part_returned)`) and identify which dealerships (`service_orders.dealership_id`) are failing to return defective supplier cores (`$282,518.23` in forfeited supplier recovery).
+3. **Attribute Component Faults to `part_source_plant_name` & Audit Dealership Core Return**: Pre-aggregate `service_parts_usage` by `service_order_id` (`LOGICAL_AND(defective_part_returned)`) and identify which dealerships (`service_orders.dealership_id`) are failing to return defective supplier cores.

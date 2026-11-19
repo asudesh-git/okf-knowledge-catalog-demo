@@ -23,7 +23,7 @@ x-kcmd:
 Retail vehicle sales, active vehicle model catalog, dealership directory, and customer identity crosswalk in `us-central1`.
 
 ## Curated Table Overlays
-- `vehicle_sales` (5,000 rows): VIN-level retail sales transactions linking `model_id`, `dealership_id`, and `sale_price`.
-- `vehicle_models` (259 rows; **8 active models** `model_id` 1..8): Model catalog linking each vehicle platform to its primary `plant_id`.
-- `dealerships` (259 rows; **8 active dealerships** `dealership_id` 1..8): Authorized retail and service dealership network.
-- `customer_identity_crosswalk` (5,000 rows): Bridges `auto_customer_id` (`vin`) to `global_loyalty_id` (`match_confidence >= 0.85`).
+- `vehicle_sales`: VIN-level retail sales transactions linking `model_id`, `dealership_id`, and `sale_price`.
+- `vehicle_models` (all catalog rows including inactive entities; **8 active models** `model_id` 1..8): Model catalog linking each vehicle platform to its primary `plant_id`.
+- `dealerships` (all catalog rows including inactive entities; **8 active dealerships** `dealership_id` 1..8): Authorized retail and service dealership network.
+- `customer_identity_crosswalk`: Bridges `auto_customer_id` (`vin`) to `global_loyalty_id` (`match_confidence >= 0.85`).

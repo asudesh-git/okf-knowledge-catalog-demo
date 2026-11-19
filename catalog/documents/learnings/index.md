@@ -23,4 +23,4 @@ x-kcmd:
 Captures empirical failure modes observed during Data Agent benchmarking and encodes deterministic SQL guardrails.
 
 ## Learnings
-- `documents/learnings/warranty-fanout-and-absorption-learnings`: Fixes `service_parts_usage` 1.78x fan-out and `service_type` 48% warranty absorption undercount.
+- `documents/learnings/warranty-fanout-and-absorption-learnings`: Fixes `service_parts_usage` multi-row N:1 fan-out and `service_type` warranty absorption undercount.

@@ -23,7 +23,7 @@ x-kcmd:
 # Context Overlay: `sa-demo-agentic.auto_sales_data.customer_identity_crosswalk`
 
 ## Purpose
-Identity resolution bridge (`5,000` rows) mapping `auto_customer_id` (which stores the vehicle `vin` / `CUST-*` key) to `global_loyalty_id` for cross-cloud CRM attribution.
+Identity resolution bridge mapping `auto_customer_id` (which stores the vehicle `vin` / `CUST-*` key) to `global_loyalty_id` for cross-cloud CRM attribution.
 
 ## Columns & Metrics
 - `auto_customer_id` (`STRING`, PK): Local automotive customer/vehicle key.

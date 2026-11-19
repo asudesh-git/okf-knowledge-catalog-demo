@@ -23,9 +23,9 @@ x-kcmd:
 Core After-Sales, Dealership Service, and Warranty Adjudication dataset in `us-central1`. Previously lacked native BigQuery column descriptions; enriched via OKF v0.2 with verified financial formulas, supplier recovery rules, and join fan-out guardrails.
 
 ## Curated Table Overlays
-- `warranty_claims` (1,894 rows): Warranty claim adjudication, plant attribution (`build_plant_name` vs `part_source_plant_name`), and supplier fault flags.
-- `service_orders` (6,104 rows): Dealership service visits; use `is_warranty_covered = TRUE` (`$1,591,386.85`) rather than `service_type = 'Warranty Repair'` (`$826,977.80`).
-- `service_parts_usage` (10,861 rows): Replaced parts per service order and `defective_part_returned` core-return tracking.
-- `vehicle_ownership` (5,000 rows): VIN-level warranty dates, mileage, `ownership_status`, and `extended_warranty_purchased`.
+- `warranty_claims`: Warranty claim adjudication, plant attribution (`build_plant_name` vs `part_source_plant_name`), and supplier fault flags.
+- `service_orders` (matching operational records): Dealership service visits; use `is_warranty_covered = TRUE` rather than `service_type = 'Warranty Repair'`.
+- `service_parts_usage`: Replaced parts per service order and `defective_part_returned` core-return tracking.
+- `vehicle_ownership`: VIN-level warranty dates, mileage, `ownership_status`, and `extended_warranty_purchased`.
 - `technicians` (120 rows): Certified dealership technicians (`Master`, `Senior`, `Apprentice`, `Specialist`).
 - `recall_campaigns` (40 rows): Safety recall campaigns by `affected_model_id` and `target_component`.

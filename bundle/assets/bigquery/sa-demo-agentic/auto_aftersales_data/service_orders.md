@@ -20,7 +20,7 @@ links:
     target_column: "dealership_id"
 queries:
   - title: "OEM Warranty-Covered Service Absorption by Service Type"
-    description: "Demonstrates why filtering is_warranty_covered = TRUE ($1,591,386.85) is mandatory vs filtering service_type = 'Warranty Repair' ($826,977.80)."
+    description: "Demonstrates why filtering is_warranty_covered = TRUE is mandatory vs filtering service_type = 'Warranty Repair'."
     sql: |
       SELECT
         service_type,
@@ -42,7 +42,7 @@ x-kcmd:
 # Context Overlay: `sa-demo-agentic.auto_aftersales_data.service_orders`
 
 ## Purpose
-Captures every dealership service bay visit (`6,104` rows, 1 row per `service_order_id`) across retail maintenance, repairs, warranty repairs, and safety recalls.
+Captures every dealership service bay visit (`active` rows, 1 row per `service_order_id`) across retail maintenance, repairs, warranty repairs, and safety recalls.
 
 ## Columns & Metrics
 - `service_order_id` (`INTEGER`, PK): Unique service order identifier (`1..6104`).
@@ -50,10 +50,10 @@ Captures every dealership service bay visit (`6,104` rows, 1 row per `service_or
 - `dealership_id` (`INTEGER`, FK -> `auto_sales_data.dealerships.dealership_id`): Servicing dealership ID (`1..8` active dealerships).
 - `technician_id` (`INTEGER`, FK -> `technicians.technician_id`): Assigned lead service technician (`1..120`).
 - `service_date` (`DATE`): Date the repair order was completed.
-- `service_type` (`STRING`): Operational bay category (`'Routine Maintenance'`, `'Repair'`, `'Warranty Repair'`, `'Recall Service'`). **CRITICAL CAVEAT**: Do NOT filter `service_type = 'Warranty Repair'` (`$826,977.80`) to compute total warranty-covered service cost! `690` `'Repair'` orders (`$558,639.28`) and `282` `'Recall Service'` orders (`$205,769.77`) are ALSO covered under warranty (`is_warranty_covered = TRUE`, `customer_paid_amount = 0`).
+- `service_type` (`STRING`): Operational bay category (`'Routine Maintenance'`, `'Repair'`, `'Warranty Repair'`, `'Recall Service'`). **CRITICAL CAVEAT**: Do NOT filter `service_type = 'Warranty Repair'` to compute total warranty-covered service cost! `690` `'Repair'` orders and `282` `'Recall Service'` orders are ALSO covered under warranty (`is_warranty_covered = TRUE`, `customer_paid_amount = 0`).
 - `labor_hours` (`FLOAT`): Billable technician labor hours.
 - `labor_cost` (`FLOAT`): Dealership labor charge.
 - `parts_cost` (`FLOAT`): Rollup of replaced parts cost for this order.
-- `total_cost` (`FLOAT`): `labor_cost + parts_cost` (`$4,468,695.07` across all 6,104 orders).
+- `total_cost` (`FLOAT`): `labor_cost + parts_cost`.
 - `customer_paid_amount` (`FLOAT`): Out-of-pocket amount paid by the vehicle owner (`$0.00` whenever `is_warranty_covered = TRUE`).
-- `is_warranty_covered` (`BOOLEAN`): Canonical flag (`1,894` orders = `TRUE`) indicating OEM warranty absorption (`$1,591,386.85` total absorbed cost).
+- `is_warranty_covered` (`BOOLEAN`): Canonical flag indicating OEM warranty absorption.

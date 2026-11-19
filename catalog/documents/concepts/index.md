@@ -24,5 +24,5 @@ Defines canonical financial formulas, fleet eligibility rules, and schema guardr
 
 ## Concepts
 - `documents/concepts/net-oem-warranty-burden`: Realized Warranty Cost, 70% Supplier Chargeback Recovery, and Unrecovered Supplier Leakage.
-- `documents/concepts/active-warranty-entitlement-fleet`: Secondary-market resale transfer rule (`4,650` entitled vehicles).
-- `documents/concepts/dimension-catalog-padding-guardrail`: Mandatory filter for 259-row padded dimension tables (`7` active plants, `8` active models, `8` active dealerships).
+- `documents/concepts/active-warranty-entitlement-fleet`: Secondary-market resale transfer rule.
+- `documents/concepts/dimension-catalog-padding-guardrail`: Mandatory filter for inactive/unallocated-row padded dimension tables (`7` active plants, `8` active models, `8` active dealerships).

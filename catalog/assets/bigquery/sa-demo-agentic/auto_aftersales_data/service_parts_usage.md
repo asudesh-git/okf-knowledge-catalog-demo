@@ -30,7 +30,7 @@ x-kcmd:
 # Context Overlay: `sa-demo-agentic.auto_aftersales_data.service_parts_usage`
 
 ## Purpose
-Line-item component replacement log (`10,861` rows, 1 row per `usage_id`, `N:1` to `service_order_id`). Tracks part numbers, quantities, costs, and whether defective cores were returned by the dealership for supplier chargeback recovery.
+Line-item component replacement log. Tracks part numbers, quantities, costs, and whether defective cores were returned by the dealership for supplier chargeback recovery.
 
 ## Columns & Metrics
 - `usage_id` (`INTEGER`, PK): Unique part replacement line item ID.

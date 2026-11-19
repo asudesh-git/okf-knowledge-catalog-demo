@@ -29,7 +29,7 @@ Progressive-disclosure root routing document for the `sa-demo-agentic` Automotiv
 2. **Domain Ontology & Tribal Knowledge (`documents/*`)**:
    - `documents/ontology/automotive-lifecycle-ontology`: End-to-end VIN lifecycle, warranty entitlement state machine, and supplier chargeback recovery rules.
    - `documents/concepts/net-oem-warranty-burden`: Canonical formula for Realized Warranty Cost, 70% Supplier Chargeback Recovery, and Unrecovered Supplier Leakage.
-   - `documents/concepts/active-warranty-entitlement-fleet`: Secondary-market transfer rules (`4,650` entitled vehicles out of `5,000`).
-   - `documents/concepts/dimension-catalog-padding-guardrail`: Mandatory filter for the 259-row padded dimension tables (`plants`, `vehicle_models`, `dealerships`).
+   - `documents/concepts/active-warranty-entitlement-fleet`: Secondary-market transfer rules.
+   - `documents/concepts/dimension-catalog-padding-guardrail`: Mandatory filter for the inactive/unallocated-row padded dimension tables (`plants`, `vehicle_models`, `dealerships`).
    - `documents/playbooks/cross-domain-root-cause-playbook`: Diagnostic SQL playbook linking manufacturing plant telemetry to dealership warranty claims.
    - `documents/learnings/warranty-fanout-and-absorption-learnings`: Validated analyst corrections preventing `service_parts_usage` join fan-out and `service_type` undercounting.

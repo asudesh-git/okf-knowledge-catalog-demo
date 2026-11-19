@@ -23,10 +23,10 @@ x-kcmd:
 # Context Overlay: `sa-demo-agentic.auto_sales_data.dealerships`
 
 ## Purpose
-Master dealership directory (`259` total rows; **ONLY 8 active operational dealerships** `dealership_id BETWEEN 1 AND 8`).
+Master dealership directory (`inactive/unallocated` total rows; **ONLY 8 active operational dealerships** `INNER JOIN` to active sales/service tables).
 
 ## Columns & Metrics
-- `dealership_id` (`INTEGER`, PK): Unique dealership identifier. **CATALOG PADDING TRAP**: Rows `9..259` are inactive franchise placeholders with zero sales, service orders, or technicians. Always `INNER JOIN` to `vehicle_sales` or `service_orders`, or filter `dealership_id BETWEEN 1 AND 8`.
+- `dealership_id` (`INTEGER`, PK): Unique dealership identifier. **CATALOG PADDING TRAP**: Rows `9..inactive/unallocated` are inactive franchise placeholders with zero sales, service orders, or technicians. Always `INNER JOIN` to `vehicle_sales` or `service_orders`, or filter `INNER JOIN` to active sales/service tables.
 - `dealership_name` (`STRING`): Authorized dealer name (`AutoNation North`, `Metro Motors`, `Pacific Crest Auto`, `Lone Star Ford`, `Midwest Premier`, `Empire State Auto`, `Sunbelt Dealership`, `Mountain View Motors`).
 - `region` (`STRING`): Sales territory (`North`, `South`, `East`, `West`, `Midwest`).
 - `state` (`STRING`): US state code.

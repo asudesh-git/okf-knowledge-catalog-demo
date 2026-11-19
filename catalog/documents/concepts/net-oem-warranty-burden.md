@@ -27,12 +27,12 @@ Establishes the CFO-approved accounting formula for **Realized Warranty Cost**, 
 
 ## Mathematical Specification
 1. **Realized Warranty Cost**:
-   $$\text{Realized Warranty Cost} = \sum_{c \in \text{Approved}} \text{claim\_amount}_c = \$1,254,786.01$$
+   $$\text{Realized Warranty Cost} = \sum_{c \in \text{Approved}} \text{claim\_amount}_c = \<calculated_spend_usd>$$
 2. **Order-Level Core Return Compliance (`all_defective_parts_returned`)**:
    Pre-aggregate `service_parts_usage` by `service_order_id` using `LOGICAL_AND(defective_part_returned)`.
 3. **Recoverable Supplier Chargeback**:
-   $$\text{Recoverable Chargeback} = \sum_{\substack{c \in \text{Approved} \\ \text{supplier\_fault}=\text{TRUE} \\ \text{all\_returned}=\text{TRUE}}} 0.70 \times \text{claim\_amount}_c = \$42,415.72$$
+   $$\text{Recoverable Chargeback} = \sum_{\substack{c \in \text{Approved} \\ \text{supplier\_fault}=\text{TRUE} \\ \text{all\_returned}=\text{TRUE}}} 0.70 \times \text{claim\_amount}_c = \<calculated_spend_usd>$$
 4. **Unrecovered Supplier Leakage**:
-   $$\text{Unrecovered Leakage} = \sum_{\substack{c \in \text{Approved} \\ \text{supplier\_fault}=\text{TRUE} \\ \text{all\_returned}=\text{FALSE}}} 0.70 \times \text{claim\_amount}_c = \$282,518.23$$
+   $$\text{Unrecovered Leakage} = \sum_{\substack{c \in \text{Approved} \\ \text{supplier\_fault}=\text{TRUE} \\ \text{all\_returned}=\text{FALSE}}} 0.70 \times \text{claim\_amount}_c = \<calculated_spend_usd>$$
 5. **Net OEM Warranty Burden**:
-   $$\text{Net OEM Warranty Burden} = \$1,254,786.01 - \$42,415.72 = \$1,212,370.29$$
+   $$\text{Net OEM Warranty Burden} = \<calculated_spend_usd> - \<calculated_spend_usd> = \<calculated_spend_usd>$$

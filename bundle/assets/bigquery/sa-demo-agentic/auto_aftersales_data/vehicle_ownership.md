@@ -34,7 +34,7 @@ x-kcmd:
 # Context Overlay: `sa-demo-agentic.auto_aftersales_data.vehicle_ownership`
 
 ## Purpose
-Master VIN-level ownership, odometer, and warranty entitlement registry (`5,000` rows, 1 row per `vin`). Governs the **Active Warranty Entitlement Fleet** (`4,650` entitled vehicles).
+Master VIN-level ownership, odometer, and warranty entitlement registry. Governs the **Active Warranty Entitlement Fleet**.
 
 ## Columns & Metrics
 - `vin` (`STRING`, PK): Unique 17-character Vehicle Identification Number (`1:1` with `auto_sales_data.vehicle_sales.vin`).
@@ -46,6 +46,6 @@ Master VIN-level ownership, odometer, and warranty entitlement registry (`5,000`
 - `extended_warranty_purchased` (`BOOLEAN`): Indicates transferable 5-year extended protection plan (`1,069` vehicles = `TRUE`).
 - `current_mileage` (`INTEGER`): Latest connected-vehicle/service odometer reading.
 - `ownership_status` (`STRING`): Lifecycle ownership state:
-  - `'Active'` (`4,582` rows): Original owner; full warranty entitlement.
-  - `'Transferred'` (`304` rows): Secondary-market resale; **ONLY entitled to warranty if `extended_warranty_purchased = TRUE` (`68` vehicles)**; the remaining `236` transferred vehicles with standard warranty have no OEM coverage.
-  - `'Buyback'` (`114` rows): Manufacturer buyback/lemon-law fleet; excluded from active customer warranty entitlement.
+  - `'Active'`: Original owner; full warranty entitlement.
+  - `'Transferred'`: Secondary-market resale; **ONLY entitled to warranty if `extended_warranty_purchased = TRUE`**; the remaining `236` transferred vehicles with standard warranty have no OEM coverage.
+  - `'Buyback'`: Manufacturer buyback/lemon-law fleet; excluded from active customer warranty entitlement.
