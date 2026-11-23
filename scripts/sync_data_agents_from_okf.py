@@ -184,6 +184,20 @@ def strip_table_schemas(refs: list[dict]) -> list[dict]:
   )
 
 
+def strip_graph_refs(refs: list[dict]) -> list[dict]:
+  return sorted(
+      [
+          {
+              "projectId": r["projectId"],
+              "datasetId": r["datasetId"],
+              "propertyGraphId": r["propertyGraphId"],
+          }
+          for r in refs
+      ],
+      key=lambda x: (x["projectId"], x["datasetId"], x["propertyGraphId"]),
+  )
+
+
 def print_diff(label: str, old_text: str, new_text: str) -> bool:
   if old_text == new_text:
     print(f"  [{label}] unchanged ({len(new_text)} chars)")
@@ -218,18 +232,26 @@ def sync_agent(spec_path: Path, token: str, apply: bool) -> bool:
   live_agent = api_req("GET", f"{GDA_BASE}/{agent_name}", token, project_id)
   live_ctx = live_agent["dataAnalyticsAgent"].get("publishedContext", {})
 
-  # Preserve existing hydrated BQ schemas for attached tables, adding any new table refs cleanly
+  # Preserve existing hydrated BQ schemas/graphs for attached refs, adding any new ones cleanly
+  bq_live = live_ctx.get("datasourceReferences", {}).get("bq", {})
   existing_schema_map = {
       (t["projectId"], t["datasetId"], t["tableId"]): t
-      for t in live_ctx.get("datasourceReferences", {}).get("bq", {}).get("tableReferences", [])
+      for t in bq_live.get("tableReferences", [])
   }
   merged_table_refs = []
   for tr in spec["table_references"]:
     key = (tr["projectId"], tr["datasetId"], tr["tableId"])
-    if key in existing_schema_map:
-      merged_table_refs.append(existing_schema_map[key])
-    else:
-      merged_table_refs.append(tr)
+    merged_table_refs.append(existing_schema_map.get(key, tr))
+
+  existing_graph_map = {
+      (g["projectId"], g["datasetId"], g["propertyGraphId"]): g
+      for g in bq_live.get("propertyGraphReferences", [])
+  }
+  spec_graph_refs = spec.get("property_graph_references", [])
+  merged_graph_refs = []
+  for gr in spec_graph_refs:
+    key = (gr["projectId"], gr["datasetId"], gr["propertyGraphId"])
+    merged_graph_refs.append(existing_graph_map.get(key, gr))
 
   print(f"\n=== Agent: {agent_id} (OKF chargeback rate = {pct}% / {dec_str}) ===")
   c1 = print_diff(
@@ -244,20 +266,20 @@ def sync_agent(spec_path: Path, token: str, apply: bool) -> bool:
   )
   c3 = print_diff(
       "tableReferences",
-      json.dumps(
-          strip_table_schemas(
-              live_ctx.get("datasourceReferences", {}).get("bq", {}).get("tableReferences", [])
-          ),
-          indent=2,
-      ),
+      json.dumps(strip_table_schemas(bq_live.get("tableReferences", [])), indent=2),
       json.dumps(strip_table_schemas(spec["table_references"]), indent=2),
   )
   c4 = print_diff(
+      "propertyGraphReferences",
+      json.dumps(strip_graph_refs(bq_live.get("propertyGraphReferences", [])), indent=2),
+      json.dumps(strip_graph_refs(spec_graph_refs), indent=2),
+  )
+  c5 = print_diff(
       "exampleQueries",
       json.dumps(live_ctx.get("exampleQueries", []), indent=2, sort_keys=True),
       json.dumps(compiled_examples, indent=2, sort_keys=True),
   )
-  changed = c1 or c2 or c3 or c4
+  changed = c1 or c2 or c3 or c4 or c5
 
   if not apply:
     return changed
@@ -268,7 +290,12 @@ def sync_agent(spec_path: Path, token: str, apply: bool) -> bool:
 
   new_context = {
       "systemInstruction": compiled_sys_instr,
-      "datasourceReferences": {"bq": {"tableReferences": merged_table_refs}},
+      "datasourceReferences": {
+          "bq": {
+              "tableReferences": merged_table_refs,
+              "propertyGraphReferences": merged_graph_refs,
+          }
+      },
       "options": spec["options"],
       "exampleQueries": compiled_examples,
       "glossaryTerms": compiled_glossary,
@@ -291,6 +318,7 @@ def sync_agent(spec_path: Path, token: str, apply: bool) -> bool:
   print(
       f"  [VERIFIED] {agent_id}: sysInstr={len(v_ctx.get('systemInstruction', ''))} chars, "
       f"tables={len(v_ctx.get('datasourceReferences', {}).get('bq', {}).get('tableReferences', []))}, "
+      f"graphs={len(v_ctx.get('datasourceReferences', {}).get('bq', {}).get('propertyGraphReferences', []))}, "
       f"glossaryTerms={len(v_ctx.get('glossaryTerms', []))}, "
       f"exampleQueries={len(v_ctx.get('exampleQueries', []))}"
   )

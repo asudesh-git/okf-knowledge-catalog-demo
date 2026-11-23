@@ -117,6 +117,23 @@
       "tableId": "v_semantic_aftersales_warranty_metrics"
     }
   ],
+  "property_graph_references": [
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_aftersales_data",
+      "propertyGraphId": "auto_enterprise_graph"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_aftersales_data",
+      "propertyGraphId": "warranty_supplier_chargeback_graph"
+    },
+    {
+      "projectId": "sa-demo-kc",
+      "datasetId": "auto_connected_telematics_data",
+      "propertyGraphId": "connected_telematics_ota_graph"
+    }
+  ],
   "verified_queries": [
     {
       "naturalLanguageQuestion": "Using the auto_enterprise_graph property graph, find which component supplier plants manufactured a defective part that caused Approved supplier-fault warranty claims across 3 or more distinct OEM vehicle assembly plants.",
