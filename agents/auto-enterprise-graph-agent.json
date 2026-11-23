@@ -1,0 +1,146 @@
+{
+  "agent_id": "auto-enterprise-graph-agent",
+  "project_id": "sa-demo-agentic",
+  "location": "global",
+  "glossary": "projects/sa-demo-agentic/locations/us-central1/glossaries/auto-warranty-aftersales-glossary",
+  "persona": "You are the Automotive Enterprise Knowledge Graph Architect specializing in multi-hop BigQuery GQL (`GRAPH` / `GRAPH_TABLE`) traversals across assembly plants, suppliers, dealerships, technicians, recalls, warranty claims, and cross-project connected vehicle OTA telematics.\n\n== LAYER 1: PROPERTY GRAPH & SEMANTIC ROUTING ==\n- Use `GRAPH_TABLE` on `sa-demo-agentic.auto_aftersales_data.auto_enterprise_graph` and `sa-demo-agentic.auto_aftersales_data.warranty_supplier_chargeback_graph` for hub supply-chain & after-sales traversals, and `sa-demo-kc.auto_connected_telematics_data.connected_telematics_ota_graph` for spoke telematics & OTA campaigns.\n- Use `v_semantic_aftersales_warranty_metrics`, `v_cross_project_ota_warranty_leakage`, and `v_semantic_telematics_ota_metrics` when scalar rollup views are sufficient.\n- Formatting: Monetary values are USD rounded to 2 decimals; always fully qualify `project.dataset.table` names.",
+  "options": {
+    "chart": {
+      "image": {
+        "svg": {}
+      }
+    },
+    "analysis": {
+      "python": {}
+    },
+    "model": "MODEL_UNSPECIFIED"
+  },
+  "table_references": [
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_aftersales_data",
+      "tableId": "warranty_claims"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_aftersales_data",
+      "tableId": "service_orders"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_aftersales_data",
+      "tableId": "service_parts_usage"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_aftersales_data",
+      "tableId": "vehicle_ownership"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_aftersales_data",
+      "tableId": "technicians"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_aftersales_data",
+      "tableId": "recall_campaigns"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_manufacturing_data",
+      "tableId": "plants"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_manufacturing_data",
+      "tableId": "parts_inventory"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_sales_data",
+      "tableId": "vehicle_models"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_sales_data",
+      "tableId": "dealerships"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_sales_data",
+      "tableId": "vehicle_sales"
+    },
+    {
+      "projectId": "sa-demo-kc",
+      "datasetId": "auto_connected_telematics_data",
+      "tableId": "connected_vehicle_dtc_events"
+    },
+    {
+      "projectId": "sa-demo-kc",
+      "datasetId": "auto_connected_telematics_data",
+      "tableId": "ota_firmware_campaigns"
+    },
+    {
+      "projectId": "sa-demo-kc",
+      "datasetId": "auto_connected_telematics_data",
+      "tableId": "vin_ota_deployments"
+    },
+    {
+      "projectId": "sa-demo-kc",
+      "datasetId": "auto_connected_telematics_data",
+      "tableId": "telematics_enrolled_vehicles"
+    },
+    {
+      "projectId": "sa-demo-kc",
+      "datasetId": "auto_connected_telematics_data",
+      "tableId": "monitored_telematics_components"
+    },
+    {
+      "projectId": "sa-demo-kc",
+      "datasetId": "auto_connected_telematics_data",
+      "tableId": "v_semantic_telematics_ota_metrics"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_aftersales_data",
+      "tableId": "v_cross_project_ota_warranty_leakage"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_manufacturing_data",
+      "tableId": "supplier_part_lineage"
+    },
+    {
+      "projectId": "sa-demo-agentic",
+      "datasetId": "auto_aftersales_data",
+      "tableId": "v_semantic_aftersales_warranty_metrics"
+    }
+  ],
+  "verified_queries": [
+    {
+      "naturalLanguageQuestion": "Using the auto_enterprise_graph property graph, find which component supplier plants manufactured a defective part that caused Approved supplier-fault warranty claims across 3 or more distinct OEM vehicle assembly plants.",
+      "sqlQuery": "GRAPH `sa-demo-agentic.auto_aftersales_data.auto_enterprise_graph`\nMATCH (vm:VehicleModel)<-[:OF_MODEL]-(v:Vehicle)-[:BUILT_AT]->(p_assembly:Plant),\n      (v)-[:SERVICED_IN]->(so:ServiceOrder)-[:GENERATED_CLAIM]->(wc:WarrantyClaim {claim_status: 'Approved', supplier_fault: TRUE})-[:CLAIM_AGAINST_PART]->(pt:Part)-[:MANUFACTURED_BY_PLANT]->(p_supplier:Plant)\nRETURN\n  p_supplier.plant_name AS supplier_plant,\n  p_supplier.location AS supplier_location,\n  pt.part_name AS failed_part,\n  COUNT(DISTINCT p_assembly.plant_name) AS impacted_oem_assembly_plants,\n  STRING_AGG(DISTINCT p_assembly.plant_name, ', ' ORDER BY p_assembly.plant_name) AS oem_plants_list,\n  COUNT(DISTINCT vm.model) AS impacted_models,\n  COUNT(DISTINCT v.vin) AS impacted_vehicles,\n  COUNT(DISTINCT wc.claim_id) AS approved_supplier_claims,\n  ROUND(SUM(wc.claim_amount), 2) AS total_approved_claim_usd\nGROUP BY supplier_plant, supplier_location, failed_part\nHAVING impacted_oem_assembly_plants >= 3\nORDER BY total_approved_claim_usd DESC\nLIMIT 10;"
+    },
+    {
+      "naturalLanguageQuestion": "Using auto_enterprise_graph, find all cases where a Recall Campaign targets BOTH a specific Vehicle Model AND a specific Part, and a Vehicle of that exact Model came in for a Service Order where that exact recalled Part was replaced by a non-Master technician and the customer was charged out-of-pocket.",
+      "sqlQuery": "GRAPH `sa-demo-agentic.auto_aftersales_data.auto_enterprise_graph`\nMATCH (vm:VehicleModel)<-[:TARGETS_MODEL]-(rc:RecallCampaign)-[:TARGETS_PART]->(pt:Part),\n      (vm)<-[:OF_MODEL]-(v:Vehicle)-[:SERVICED_IN]->(so:ServiceOrder {is_warranty_covered: FALSE})-[:REPLACED_PART]->(pt),\n      (so)-[:HANDLED_BY]->(t:Technician {is_master_tech: FALSE}),\n      (so)-[:PERFORMED_AT]->(d:Dealership)\nRETURN\n  rc.campaign_name AS campaign_name,\n  rc.severity AS recall_severity,\n  vm.model AS vehicle_model,\n  pt.part_name AS recalled_part,\n  d.dealership AS service_dealership,\n  t.certification_level AS tech_cert_level,\n  COUNT(DISTINCT so.service_order_id) AS unbilled_recall_service_orders,\n  COUNT(DISTINCT v.vin) AS affected_vins,\n  ROUND(SUM(so.customer_paid_amount), 2) AS customer_overcharged_usd\nGROUP BY campaign_name, recall_severity, vehicle_model, recalled_part, service_dealership, tech_cert_level\nORDER BY customer_overcharged_usd DESC\nLIMIT 10;"
+    },
+    {
+      "naturalLanguageQuestion": "Using auto_enterprise_graph, identify technician comeback chains where a Vehicle was serviced in an initial Service Order handled by a Technician at a Dealership, and the same Vehicle returned within 90 days for a subsequent Service Order that resulted in an Approved Warranty Claim.",
+      "sqlQuery": "GRAPH `sa-demo-agentic.auto_aftersales_data.auto_enterprise_graph`\nMATCH (t1:Technician)<-[:HANDLED_BY]-(so1:ServiceOrder)<-[:SERVICED_IN]-(v:Vehicle)-[:SERVICED_IN]->(so2:ServiceOrder)-[:GENERATED_CLAIM]->(wc2:WarrantyClaim {claim_status: 'Approved'}),\n      (so1)-[:PERFORMED_AT]->(d:Dealership)\nWHERE so1.service_order_id != so2.service_order_id\n  AND so2.service_date > so1.service_date\n  AND DATE_DIFF(so2.service_date, so1.service_date, DAY) <= 90\nRETURN\n  d.dealership AS dealership,\n  t1.technician_name AS initial_tech,\n  t1.certification_level AS initial_tech_cert,\n  v.model AS vehicle_model,\n  COUNT(DISTINCT v.vin) AS comeback_vehicles,\n  COUNT(DISTINCT wc2.claim_id) AS repeat_warranty_claims,\n  ROUND(AVG(DATE_DIFF(so2.service_date, so1.service_date, DAY)), 1) AS avg_days_to_comeback,\n  ROUND(SUM(wc2.claim_amount), 2) AS repeat_claim_cost_usd\nGROUP BY dealership, initial_tech, initial_tech_cert, vehicle_model\nORDER BY repeat_claim_cost_usd DESC\nLIMIT 10;"
+    },
+    {
+      "naturalLanguageQuestion": "Write a hybrid GRAPH_TABLE and SQL query on auto_enterprise_graph that traverses from each OEM Assembly Plant to Vehicle, ServiceOrder, replaced Parts, and Approved supplier-fault WarrantyClaims, applies the {{RECOVERY_RATE_PCT}}% supplier chargeback rule, and ranks the top 2 highest-loss parts per OEM assembly plant.",
+      "sqlQuery": "WITH graph_paths AS (\n  SELECT *\n  FROM GRAPH_TABLE(\n    `sa-demo-agentic.auto_aftersales_data.auto_enterprise_graph`\n    MATCH (p_build:Plant)<-[:BUILT_AT]-(v:Vehicle)-[:SERVICED_IN]->(so:ServiceOrder)-[rp:REPLACED_PART]->(:Part),\n          (so)-[:GENERATED_CLAIM]->(wc:WarrantyClaim {claim_status: 'Approved', supplier_fault: TRUE})-[:CLAIM_AGAINST_PART]->(pt:Part)-[:MANUFACTURED_BY_PLANT]->(p_supplier:Plant)\n    COLUMNS (\n      p_build.plant_name AS assembly_plant,\n      p_supplier.plant_name AS supplier_plant,\n      pt.part_name AS failed_part,\n      wc.claim_id AS claim_id,\n      wc.claim_amount AS claim_amount,\n      rp.defective_part_returned AS defective_part_returned\n    )\n  )\n),\nclaim_level AS (\n  SELECT\n    assembly_plant,\n    supplier_plant,\n    failed_part,\n    claim_id,\n    ANY_VALUE(claim_amount) AS claim_amount,\n    LOGICAL_AND(defective_part_returned) AS all_cores_returned\n  FROM graph_paths\n  GROUP BY assembly_plant, supplier_plant, failed_part, claim_id\n),\nplant_part_rollup AS (\n  SELECT\n    assembly_plant,\n    failed_part,\n    supplier_plant,\n    COUNT(DISTINCT claim_id) AS approved_claims,\n    ROUND(SUM(claim_amount), 2) AS gross_supplier_fault_usd,\n    ROUND(SUM(CASE WHEN all_cores_returned THEN claim_amount * {{RECOVERY_RATE_DEC}} ELSE 0 END), 2) AS recoverable_chargeback_usd,\n    ROUND(SUM(CASE WHEN all_cores_returned THEN claim_amount * {{UNRECOVERED_RATE_DEC}} ELSE claim_amount END), 2) AS net_oem_unrecovered_usd\n  FROM claim_level\n  GROUP BY assembly_plant, failed_part, supplier_plant\n)\nSELECT\n  assembly_plant,\n  failed_part,\n  supplier_plant,\n  approved_claims,\n  gross_supplier_fault_usd,\n  recoverable_chargeback_usd,\n  net_oem_unrecovered_usd,\n  ROUND(100.0 * net_oem_unrecovered_usd / SUM(net_oem_unrecovered_usd) OVER (PARTITION BY assembly_plant), 2) AS pct_of_plant_unrecovered_loss,\n  RANK() OVER (PARTITION BY assembly_plant ORDER BY net_oem_unrecovered_usd DESC) AS plant_loss_rank\nFROM plant_part_rollup\nQUALIFY plant_loss_rank <= 2\nORDER BY net_oem_unrecovered_usd DESC;"
+    },
+    {
+      "naturalLanguageQuestion": "How much did we spend on avoidable warranty hardware replacements where vehicles emitted an OTA-remediable fault alert before the active firmware update was installed, and which components and OTA campaigns account for the highest leakage?",
+      "sqlQuery": "WITH spoke_unpatched_ota_vins AS (\n  SELECT DISTINCT\n    vin,\n    component,\n    ota_campaign,\n    firmware,\n    dtc_code\n  FROM GRAPH_TABLE(\n    `sa-demo-kc.auto_connected_telematics_data.connected_telematics_ota_graph`\n    MATCH (v:TelematicsVehicle)-[r:RECEIVED_OTA]->(ota:OtaFirmwareCampaign {deployment_status: 'Active Rollout'})\n          -[:MITIGATES_COMPONENT]->(c:MonitoredComponent)\n          <-[:FAULT_ON_COMPONENT]-(e:DtcFaultEvent {telemetry_stream_status: 'VERIFIED_VEHICLE_ALERT', ota_remediable: TRUE})\n          <-[:EMITTED_DTC]-(v)\n    WHERE r.install_status != 'Installed'\n    COLUMNS (\n      v.vin AS vin,\n      c.part_name AS component,\n      ota.ota_campaign_id AS ota_campaign,\n      ota.firmware_version AS firmware,\n      e.dtc_code AS dtc_code\n    )\n  )\n),\nhub_deduped_warranty_claims AS (\n  SELECT\n    vin,\n    claim_id,\n    part_name,\n    ANY_VALUE(claim_amount) AS claim_amount,\n    COUNT(DISTINCT batch_lot_id) AS linked_safety_batches,\n    COUNT(DISTINCT supplier_plant) AS linked_supplier_plants\n  FROM GRAPH_TABLE(\n    `sa-demo-agentic.auto_aftersales_data.warranty_supplier_chargeback_graph`\n    MATCH (wc:WarrantyClaim {claim_status: 'Approved'})\n          -[:CLAIM_AGAINST_PART]->(pt:Part)\n          -[:FROM_PART_BATCH]->(b:PartBatch {is_safety_critical_subcomponent: TRUE})\n          -[:BATCH_SUPPLIED_BY]->(sp:SupplierPlant)\n    COLUMNS (\n      wc.vin AS vin,\n      wc.claim_id AS claim_id,\n      wc.claim_amount AS claim_amount,\n      pt.part_name AS part_name,\n      b.subcomponent_lot_id AS batch_lot_id,\n      sp.plant_name AS supplier_plant\n    )\n  )\n  GROUP BY vin, claim_id, part_name\n)\nSELECT\n  s.component AS defective_part,\n  s.ota_campaign,\n  s.firmware,\n  s.dtc_code,\n  COUNT(DISTINCT h.claim_id) AS avoidable_approved_claims,\n  MAX(h.linked_safety_batches) AS safety_batches_traced,\n  MAX(h.linked_supplier_plants) AS upstream_supplier_plants,\n  ROUND(SUM(h.claim_amount), 2) AS avoidable_hardware_leakage_usd\nFROM spoke_unpatched_ota_vins s\nINNER JOIN hub_deduped_warranty_claims h\n  ON s.vin = h.vin AND s.component = h.part_name\nGROUP BY defective_part, ota_campaign, firmware, dtc_code\nORDER BY avoidable_hardware_leakage_usd DESC\nLIMIT 5;"
+    },
+    {
+      "naturalLanguageQuestion": "What is our total avoidable OTA hardware replacement leakage across the connected vehicle fleet?",
+      "sqlQuery": "SELECT\n  COUNT(*) AS correlated_approved_claims,\n  COUNTIF(is_avoidable_ota_hardware_claim) AS avoidable_ota_hardware_claims,\n  ROUND(SUM(IF(is_avoidable_ota_hardware_claim, claim_amount, 0)), 2) AS avoidable_ota_hardware_leakage_usd\nFROM `sa-demo-agentic.auto_aftersales_data.v_cross_project_ota_warranty_leakage`;"
+    }
+  ]
+}

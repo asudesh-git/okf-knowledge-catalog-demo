@@ -1,0 +1,47 @@
+name: Sync OKF v0.2 & Business Glossary to Data Agents
+
+on:
+  pull_request:
+    paths:
+      - "raw-tribal-knowledge/**"
+      - "catalog/**"
+      - "agents/**"
+      - "scripts/sync_data_agents_from_okf.py"
+  push:
+    branches:
+      - main
+    paths:
+      - "raw-tribal-knowledge/**"
+      - "catalog/**"
+      - "agents/**"
+      - "scripts/sync_data_agents_from_okf.py"
+  workflow_dispatch:
+
+jobs:
+  preview-or-sync-agents:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Dry-Run Diff on Pull Requests
+        if: github.event_name == 'pull_request'
+        run: python3 scripts/sync_data_agents_from_okf.py --dry-run
+
+      - name: Compile & Publish Thin Context + Glossary + Top KPIs on Merge
+        if: github.event_name != 'pull_request'
+        run: python3 scripts/sync_data_agents_from_okf.py --apply
